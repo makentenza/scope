@@ -79,21 +79,6 @@ var PodServiceRenderer = ConditionalRenderer(renderKubernetesTopologies,
 	),
 )
 
-// DeploymentRenderer is a Renderer which produces a renderable kubernetes deployments
-// graph by merging the pods graph and the deployments topology.
-var DeploymentRenderer = ConditionalRenderer(renderKubernetesTopologies,
-	MakeMap(
-		PropagateSingleMetrics(report.ReplicaSet),
-		MakeReduce(
-			MakeMap(
-				Map2Parent([]string{report.Deployment}, NoParentsDrop, "", mapPodCounts),
-				ReplicaSetRenderer,
-			),
-			SelectDeployment,
-		),
-	),
-)
-
 // ReplicaSetRenderer is a Renderer which produces a renderable kubernetes replica sets
 // graph by merging the pods graph and the replica sets topology.
 var ReplicaSetRenderer = ConditionalRenderer(renderKubernetesTopologies,
@@ -109,30 +94,16 @@ var ReplicaSetRenderer = ConditionalRenderer(renderKubernetesTopologies,
 	),
 )
 
-// DaemonSetRenderer is a Renderer which produces a renderable kubernetes daemonsets
-// graph by merging the pods graph and the daemonsets topology.
-var DaemonSetRenderer = ConditionalRenderer(renderKubernetesTopologies,
-	MakeMap(
-		PropagateSingleMetrics(report.Pod),
-		MakeReduce(
-			MakeMap(
-				Map2Parent([]string{report.DaemonSet}, NoParentsDrop, "", nil),
-				PodRenderer,
-			),
-			SelectDaemonSet,
-		),
-	),
-)
-
-// KubeCombinedRenderer is a Renderer which combines the 'top abstraction' of all pods.
+// KubeControllerRenderer is a Renderer which combines all the 'controller' topologies.
 // We first map pods to all possible things they can map to, then we map again to
 // deployments since some things (replica sets) can map to those (the rest are passed through
 // unchanged).
+// Pods with no controller are mapped to 'Unmanaged'
 // We can't simply combine the rendered graphs of the high level objects as they would never
 // have connections to each other.
 // We combine with all the full topologies using ReduceFirstOnly, which keeps the same
 // set of nodes but merges in the full data from the other renderers.
-var KubeCombinedRenderer = ConditionalRenderer(renderKubernetesTopologies,
+var KubeControllerRenderer = ConditionalRenderer(renderKubernetesTopologies,
 	MakeReduceFirstOnly(
 		MakeMap(
 			Map2Parent([]string{report.Deployment}, NoParentsKeep, "", mapPodCounts),
@@ -141,7 +112,7 @@ var KubeCombinedRenderer = ConditionalRenderer(renderKubernetesTopologies,
 					Map2Parent([]string{
 						report.ReplicaSet,
 						report.DaemonSet,
-					}, NoParentsKeep, "", nil),
+					}, NoParentsPseudo, UnmanagedID, nil),
 					PodRenderer,
 				),
 				SelectReplicaSet,
