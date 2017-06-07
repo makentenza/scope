@@ -29,13 +29,13 @@ const (
 
 	// Shapes used for different nodes
 	Circle   = "circle"
-	Square   = "square"
-	Heptagon = "heptagon"
-	Hexagon  = "hexagon"
-	Cloud    = "cloud"
 	Triangle = "triangle"
+	Square   = "square"
 	Pentagon = "pentagon"
+	Hexagon  = "hexagon"
+	Heptagon = "heptagon"
 	Octogon  = "octogon"
+	Cloud    = "cloud"
 
 	// Used when counting the number of containers
 	ContainersKey = "containers"
