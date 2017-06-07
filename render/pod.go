@@ -135,7 +135,7 @@ var DaemonSetRenderer = ConditionalRenderer(renderKubernetesTopologies,
 var KubeCombinedRenderer = ConditionalRenderer(renderKubernetesTopologies,
 	MakeReduceFirstOnly(
 		MakeMap(
-			Map2Parent([]string{report.Deployment}, NoParentsKeep, "", nil),
+			Map2Parent([]string{report.Deployment}, NoParentsKeep, "", mapPodCounts),
 			MakeReduceFirstOnly(
 				MakeMap(
 					Map2Parent([]string{
