@@ -34,7 +34,7 @@ const (
 	Pentagon = "pentagon"
 	Hexagon  = "hexagon"
 	Heptagon = "heptagon"
-	Octogon  = "octogon"
+	Octagon  = "octagon"
 	Cloud    = "cloud"
 
 	// Used when counting the number of containers
@@ -158,7 +158,7 @@ func MakeReport() Report {
 			WithLabel("host", "hosts"),
 
 		Pod: MakeTopology().
-			WithShape(Octogon).
+			WithShape(Octagon).
 			WithLabel("pod", "pods"),
 
 		Service: MakeTopology().

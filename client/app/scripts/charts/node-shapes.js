@@ -17,7 +17,7 @@ import {
   pentagonShapeProps,
   hexagonShapeProps,
   heptagonShapeProps,
-  octogonShapeProps,
+  octagonShapeProps,
   cloudShapeProps,
 } from '../utils/node-shape-utils';
 
@@ -78,5 +78,5 @@ export const NodeShapeSquare = props => NodeShape('square', rectangleElement, sq
 export const NodeShapePentagon = props => NodeShape('pentagon', pathElement, pentagonShapeProps, props);
 export const NodeShapeHexagon = props => NodeShape('hexagon', pathElement, hexagonShapeProps, props);
 export const NodeShapeHeptagon = props => NodeShape('heptagon', pathElement, heptagonShapeProps, props);
-export const NodeShapeOctogon = props => NodeShape('octogon', pathElement, octogonShapeProps, props);
+export const NodeShapeOctagon = props => NodeShape('octagon', pathElement, octagonShapeProps, props);
 export const NodeShapeCloud = props => NodeShape('cloud', pathElement, cloudShapeProps, props);

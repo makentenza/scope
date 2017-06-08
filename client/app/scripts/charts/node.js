@@ -20,7 +20,7 @@ import {
   NodeShapePentagon,
   NodeShapeHexagon,
   NodeShapeHeptagon,
-  NodeShapeOctogon,
+  NodeShapeOctagon,
   NodeShapeCloud,
 } from './node-shapes';
 
@@ -33,7 +33,7 @@ const nodeShapes = {
   pentagon: NodeShapePentagon,
   hexagon: NodeShapeHexagon,
   heptagon: NodeShapeHeptagon,
-  octogon: NodeShapeOctogon,
+  octagon: NodeShapeOctagon,
   cloud: NodeShapeCloud,
 };
 
