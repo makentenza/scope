@@ -158,7 +158,7 @@ func MakeReport() Report {
 			WithLabel("host", "hosts"),
 
 		Pod: MakeTopology().
-			WithShape(Octagon).
+			WithShape(Heptagon).
 			WithLabel("pod", "pods"),
 
 		Service: MakeTopology().
@@ -166,15 +166,15 @@ func MakeReport() Report {
 			WithLabel("service", "services"),
 
 		Deployment: MakeTopology().
-			WithShape(Heptagon).
+			WithShape(Octagon).
 			WithLabel("deployment", "deployments"),
 
 		ReplicaSet: MakeTopology().
-			WithShape(Pentagon).
+			WithShape(Triangle).
 			WithLabel("replica set", "replica sets"),
 
 		DaemonSet: MakeTopology().
-			WithShape(Triangle).
+			WithShape(Pentagon).
 			WithLabel("daemonset", "daemonsets"),
 
 		Overlay: MakeTopology().
