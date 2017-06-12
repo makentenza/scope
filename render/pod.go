@@ -105,18 +105,21 @@ var ReplicaSetRenderer = ConditionalRenderer(renderKubernetesTopologies,
 // set of nodes but merges in the full data from the other renderers.
 var KubeControllerRenderer = ConditionalRenderer(renderKubernetesTopologies,
 	MakeReduceFirstOnly(
-		MakeMap(
-			Map2Parent([]string{report.Deployment}, NoParentsKeep, "", mapPodCounts),
-			MakeReduceFirstOnly(
-				MakeMap(
-					Map2Parent([]string{
-						report.ReplicaSet,
-						report.DaemonSet,
-					}, NoParentsPseudo, UnmanagedID, nil),
-					PodRenderer,
+		MakeFilter(
+			Complement(IsTopology(report.ReplicaSet)),
+			MakeMap(
+				Map2Parent([]string{report.Deployment}, NoParentsKeep, "", mapPodCounts),
+				MakeReduceFirstOnly(
+					MakeMap(
+						Map2Parent([]string{
+							report.ReplicaSet,
+							report.DaemonSet,
+						}, NoParentsPseudo, UnmanagedID, nil),
+						PodRenderer,
+					),
+					SelectReplicaSet,
+					SelectDaemonSet,
 				),
-				SelectReplicaSet,
-				SelectDaemonSet,
 			),
 		),
 		SelectDeployment,
