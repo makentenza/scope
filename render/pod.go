@@ -104,21 +104,34 @@ var ReplicaSetRenderer = ConditionalRenderer(renderKubernetesTopologies,
 // We combine with all the full topologies using ReduceFirstOnly, which keeps the same
 // set of nodes but merges in the full data from the other renderers.
 var KubeControllerRenderer = ConditionalRenderer(renderKubernetesTopologies,
-	MakeReduceFirstOnly(
+	MakeReduce(
+		// Include full deployment topology
 		MakeFilter(
+			// Filter out any remaining unmatched replica sets
 			Complement(IsTopology(report.ReplicaSet)),
 			MakeMap(
-				Map2Parent([]string{report.Deployment}, NoParentsKeep, "", mapPodCounts),
-				MakeReduceFirstOnly(
-					MakeMap(
-						Map2Parent([]string{
-							report.ReplicaSet,
-							report.DaemonSet,
-						}, NoParentsPseudo, UnmanagedID, nil),
-						PodRenderer,
+				// Include pod metrics previously mapped to replica sets, in deployments
+				PropagateSingleMetrics(report.ReplicaSet),
+				MakeMap(
+					// Map replica sets to deployments, leaving unmatched replica sets and anything else unchanged
+					Map2Parent([]string{report.Deployment}, NoParentsKeep, "", mapPodCounts),
+					MakeReduce(
+						// Include full replica set and daemonset topologies
+						MakeMap(
+							// Include pod metrics in mapped nodes
+							PropagateSingleMetrics(report.Pod),
+							MakeMap(
+								// Transform pods to replica sets, daemonsets and 'unmanaged'
+								Map2Parent([]string{
+									report.ReplicaSet,
+									report.DaemonSet,
+								}, NoParentsPseudo, UnmanagedID, nil),
+								PodRenderer,
+							),
+						),
+						SelectReplicaSet,
+						SelectDaemonSet,
 					),
-					SelectReplicaSet,
-					SelectDaemonSet,
 				),
 			),
 		),
