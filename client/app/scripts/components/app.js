@@ -12,7 +12,6 @@ import Search from './search';
 import Status from './status';
 import Topologies from './topologies';
 import TopologyOptions from './topology-options';
-import CloudFeature from './cloud-feature';
 import { getApiDetails, getTopologies } from '../utils/web-api-utils';
 import {
   focusSearch,
@@ -37,6 +36,7 @@ import DebugToolbar, { showingDebugToolbar, toggleDebugToolbar } from './debug-t
 import { getRouter, getUrlState } from '../utils/router-utils';
 import { trackMixpanelEvent } from '../utils/tracking-utils';
 import { availableNetworksSelector } from '../selectors/node-networks';
+import { showingTimeTravelSelector } from '../selectors/time-travel';
 import {
   activeTopologyOptionsSelector,
   isResourceViewModeSelector,
@@ -166,7 +166,7 @@ class App extends React.Component {
 
   render() {
     const { isTableViewMode, isGraphViewMode, isResourceViewMode, showingDetails, showingHelp,
-      showingNetworkSelector, showingTroubleshootingMenu } = this.props;
+      showingNetworkSelector, showingTroubleshootingMenu, showingTimeTravel } = this.props;
     const isIframe = window !== window.top;
 
     return (
@@ -192,9 +192,7 @@ class App extends React.Component {
 
         <Nodes />
 
-        <CloudFeature>
-          {!isResourceViewMode && <TimeTravel />}
-        </CloudFeature>
+        {showingTimeTravel && <TimeTravel />}
 
         <Sidebar classNames={isTableViewMode ? 'sidebar-gridmode' : ''}>
           {showingNetworkSelector && isGraphViewMode && <NetworkSelector />}
@@ -216,6 +214,7 @@ function mapStateToProps(state) {
     isResourceViewMode: isResourceViewModeSelector(state),
     isTableViewMode: isTableViewModeSelector(state),
     isGraphViewMode: isGraphViewModeSelector(state),
+    showingTimeTravel: showingTimeTravelSelector(state),
     pinnedMetricType: state.get('pinnedMetricType'),
     routeSet: state.get('routeSet'),
     searchFocused: state.get('searchFocused'),

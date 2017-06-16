@@ -41,6 +41,7 @@ const topologySorter = topology => topology.get('rank');
 // Initial values
 
 export const initialState = makeMap({
+  capabilities: makeMap(),
   contrastMode: false,
   controlPipes: makeOrderedMap(), // pipeId -> controlPipe
   controlStatus: makeMap(),
@@ -652,10 +653,12 @@ export function rootReducer(state = initialState, action) {
       state = state.set('errorUrl', null);
 
       return state.merge({
+        capabilities: action.capabilities,
         hostname: action.hostname,
-        version: action.version,
         plugins: action.plugins,
-        versionUpdate: action.newVersion
+        version: action.version,
+        // TODO: Why is that one never forwarded here?
+        versionUpdate: action.newVersion,
       });
     }
 
