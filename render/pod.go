@@ -1,7 +1,6 @@
 package render
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/weaveworks/scope/probe/docker"
@@ -79,9 +78,8 @@ var ReplicaSetRenderer = ConditionalRenderer(renderKubernetesTopologies,
 )
 
 // KubeControllerRenderer is a Renderer which combines all the 'controller' topologies.
-// We first map pods to all possible things they can map to, then we map again to
-// deployments since some things (replica sets) can map to those (the rest are passed through
-// unchanged).
+// We first map pods to daemonsets and replica sets, then to deployments since replica sets
+// can map to those (the rest are passed through unchanged).
 // Pods with no controller are mapped to 'Unmanaged'
 // We can't simply combine the rendered graphs of the high level objects as they would never
 // have connections to each other.
@@ -110,18 +108,15 @@ func renderParents(childTopology string, parentTopologies []string, noParentsAct
 	for i, topology := range parentTopologies {
 		selectors[i] = TopologySelector(topology)
 	}
-	// weird append form is to accomplish MakeReduce(subrenderer, selectors...) since that form isn't allowed
 	return MakeReduce(append(
-		[]Renderer{
+		selectors,
+		MakeMap(
+			PropagateSingleMetrics(childTopology),
 			MakeMap(
-				PropagateSingleMetrics(childTopology),
-				MakeMap(
-					Map2Parent(parentTopologies, noParentsAction, noParentsPseudoID, modifyMappedNode),
-					childRenderer,
-				),
+				Map2Parent(parentTopologies, noParentsAction, noParentsPseudoID, modifyMappedNode),
+				childRenderer,
 			),
-		},
-		selectors...,
+		),
 	)...)
 }
 
@@ -206,8 +201,6 @@ func Map2Parent(
 				result[n.ID] = n
 			case NoParentsDrop:
 				// Do nothing, we will return an empty result
-			default:
-				panic(fmt.Sprintf("Map2Parent got bad noParentsAction %v", noParentsAction))
 			}
 		}
 

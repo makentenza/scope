@@ -260,7 +260,6 @@ func podNodeSummary(base NodeSummary, n report.Node) (NodeSummary, bool) {
 var podGroupNodeTypeName = map[string]string{
 	report.Deployment: "Deployment",
 	report.DaemonSet:  "Daemon Set",
-	report.ReplicaSet: "Replica Set",
 }
 
 func podGroupNodeSummary(base NodeSummary, n report.Node) (NodeSummary, bool) {
